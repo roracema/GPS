@@ -2,10 +2,12 @@ package com.example.logonrmlocal.gps;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.LocaleList;
 import android.support.annotation.NonNull;
@@ -28,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private LocationListener locationListener;
     private TextView locationTextView;
     private static final int REQUEST_PERMISSION_GPS = 1001;
+    private double lat;
+    private double lon;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                double lat = location.getLatitude();
-                double lon = location.getLongitude();
+                lat = location.getLatitude();
+                lon = location.getLongitude();
                 locationTextView.setText(
                         String.format(Locale.getDefault(),
                                 "Lat: %f, Long: %f",
@@ -69,8 +73,17 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Uri uri = Uri.parse(
+                  String.format(
+                     "geo:%f, %f?q=%s",
+                          lat,
+                          lon,
+                          getString(R.string.busca)
+                  )
+                );
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setPackage("com.google.android.apps.maps");
+                startActivity(intent);
             }
         });
     }
